@@ -39,8 +39,8 @@ st.title("Response Visualization")
 # Dataset credits
 st.markdown("""
 **Dataset Credits:**
-- **Source:** [ORPO-DPO-MIX-40K Dataset on Hugging Face](https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/tree/main/data)
 - **Author:** mlabonne
+- **Source:** [ORPO-DPO-MIX-40K Dataset on Hugging Face](https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/tree/main/data)
 """)
 
 # User name input
