@@ -78,27 +78,11 @@ def highlight_differences(chosen, rejected):
 filtered_data['chosen_response'] = filtered_data['chosen'].apply(format_conversation)
 filtered_data['rejected_response'] = filtered_data['rejected'].apply(format_conversation)
 
-# Create a list of question indices with their viewed status
-question_options = [
-    f"{i} - {'Viewed' if i in viewed_history_and_comments.get('viewed', []) else 'Not Viewed'}"
-    for i in filtered_data.index
-]
-
 # Create a dropdown for selecting the question index
-index_selection = st.selectbox("Select a Question Index", question_options)
-
-# Extract the actual index from the selected option
-selected_index = int(index_selection.split(" - ")[0])
+index_selection = st.selectbox("Select a Question Index", filtered_data.index)
 
 # Get the selected question's details
-selected_data = filtered_data.loc[selected_index]
-
-# Update the session state with the new viewed question index
-if 'viewed' not in viewed_history_and_comments:
-    viewed_history_and_comments['viewed'] = []
-
-if selected_index not in viewed_history_and_comments['viewed']:
-    viewed_history_and_comments['viewed'].append(selected_index)
+selected_data = filtered_data.loc[index_selection]
 
 # Display the details
 st.markdown("### Data Source Type:")
@@ -107,18 +91,16 @@ st.markdown(f"**{selected_data['source']}**")
 st.markdown("### Question:")
 st.markdown(f"**{selected_data['prompt']}**")
 
-# Create tabs for Chosen Response, Rejected Response, and Comparison
-tab1, tab2, tab3 = st.tabs(["Chosen Response", "Rejected Response", "Comparison"])
+# Create tabs for Chosen Response and Rejected Response
+tab1, tab2 = st.tabs(["Chosen Response", "Rejected Response"])
 
 with tab1:
-    st.markdown(f"<div style='color: green;'>{selected_data['chosen_response']}</div>", unsafe_allow_html=True)
+    html_diff_chosen = highlight_differences(selected_data['chosen_response'], selected_data['rejected_response'])
+    st.markdown(html_diff_chosen, unsafe_allow_html=True)
 
 with tab2:
-    st.markdown(f"<div style='color: orange;'>{selected_data['rejected_response']}</div>", unsafe_allow_html=True)
-
-with tab3:
-    html_diff = highlight_differences(selected_data['chosen_response'], selected_data['rejected_response'])
-    st.markdown(html_diff, unsafe_allow_html=True)
+    html_diff_rejected = highlight_differences(selected_data['rejected_response'], selected_data['chosen_response'])
+    st.markdown(html_diff_rejected, unsafe_allow_html=True)
 
 # Display comments section
 st.markdown("### Comments")
@@ -127,17 +109,17 @@ comment_section = viewed_history_and_comments.get('comments', {})
 # Display all comments for the selected question
 all_comments = []
 for user, comments in comment_section.items():
-    if str(selected_index) in comments:
-        all_comments.append(f"**{user}**:<br>{comments[str(selected_index)]}<br><br>")
+    if str(index_selection) in comments:
+        all_comments.append(f"**{user}**:<br>{comments[str(index_selection)]}<br><br>")
 st.markdown("\n".join(all_comments) if all_comments else "No comments yet.", unsafe_allow_html=True)
 
 # Comment input section
 if 'anonymous' not in comment_section:
     comment_section['anonymous'] = {}
 
-comment = st.text_area("Enter your comments here:", value=comment_section['anonymous'].get(str(selected_index), ""))
+comment = st.text_area("Enter your comments here:", value=comment_section['anonymous'].get(str(index_selection), ""))
 if st.button("Save Comment"):
-    comment_section['anonymous'][str(selected_index)] = comment
+    comment_section['anonymous'][str(index_selection)] = comment
     viewed_history_and_comments['comments'] = comment_section
     save_viewed_history_and_comments(viewed_history_and_comments)
     st.success("Comment saved!")
