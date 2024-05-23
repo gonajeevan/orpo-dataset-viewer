@@ -112,7 +112,7 @@ if username:
     st.markdown(selected_data['rejected_response'])
 
     # Add a checkbox for the author to view all comments
-    view_all_comments = st.checkbox("View all comments (for author)")
+    view_all_comments = st.checkbox("View all comments")
 
     # Display comments section
     st.markdown("### Your Comments")
