@@ -50,7 +50,7 @@ st.markdown("""
 """)
 
 # User name input
-username = st.text_input("Enter your username")
+username = st.text_input("Enter dummy username (To track history and for no other use)")
 
 if username:
     # Load viewed questions history and comments
