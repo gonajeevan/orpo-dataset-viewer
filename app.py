@@ -113,10 +113,12 @@ st.markdown("### Question:")
 st.markdown(f"**{selected_data['prompt']}**")
 
 st.markdown("### Chosen Response:")
-st.markdown(selected_data['chosen_response'], unsafe_allow_html=True)
+# st.markdown(selected_data['chosen_response'], unsafe_allow_html=True)
+st.markdown(selected_data['chosen_response'])
 
 st.markdown("### Rejected Response:")
-st.markdown(selected_data['rejected_response'], unsafe_allow_html=True)
+# st.markdown(selected_data['rejected_response'], unsafe_allow_html=True)
+st.markdown(selected_data['rejected_response'])
 
 # Display comments section
 st.markdown("### Comments")
