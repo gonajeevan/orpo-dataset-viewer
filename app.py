@@ -6,7 +6,7 @@ from io import BytesIO
 import json
 
 # URL of the Parquet dataset
-url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/orpo_40k_dataset.parquet"
+url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/train-00000-of-00001.parquet"
 
 # Function to load the dataset and cache it
 @st.cache_data
