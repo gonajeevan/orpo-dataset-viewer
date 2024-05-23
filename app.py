@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import json
 import os
+import difflib
 
 # URL of the Parquet dataset
 url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/train-00000-of-00001.parquet"
@@ -67,6 +68,12 @@ def format_conversation(conversation):
         formatted_conversation += f"<< {role.capitalize()} >>:\n{content}\n\n"
     return formatted_conversation.strip()
 
+# Function to highlight differences between two texts
+def highlight_differences(chosen, rejected):
+    differ = difflib.HtmlDiff()
+    html_diff = differ.make_table(chosen.splitlines(), rejected.splitlines(), context=True, numlines=0)
+    return html_diff
+
 # Apply the parsing function to the chosen and rejected columns
 filtered_data['chosen_response'] = filtered_data['chosen'].apply(format_conversation)
 filtered_data['rejected_response'] = filtered_data['rejected'].apply(format_conversation)
@@ -100,14 +107,18 @@ st.markdown(f"**{selected_data['source']}**")
 st.markdown("### Question:")
 st.markdown(f"**{selected_data['prompt']}**")
 
-# Create tabs for Chosen Response and Rejected Response
-tab1, tab2 = st.tabs(["Chosen Response", "Rejected Response"])
+# Create tabs for Chosen Response, Rejected Response, and Comparison
+tab1, tab2, tab3 = st.tabs(["Chosen Response", "Rejected Response", "Comparison"])
 
 with tab1:
     st.markdown(f"<div style='color: green;'>{selected_data['chosen_response']}</div>", unsafe_allow_html=True)
 
 with tab2:
     st.markdown(f"<div style='color: orange;'>{selected_data['rejected_response']}</div>", unsafe_allow_html=True)
+
+with tab3:
+    html_diff = highlight_differences(selected_data['chosen_response'], selected_data['rejected_response'])
+    st.markdown(html_diff, unsafe_allow_html=True)
 
 # Display comments section
 st.markdown("### Comments")
