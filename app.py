@@ -1,5 +1,7 @@
 import streamlit as st
 import pandas as pd
+import json
+import os
 
 # URL of the Parquet dataset
 url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/train-00000-of-00001.parquet"
@@ -9,6 +11,18 @@ url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/da
 def load_data():
     data = pd.read_parquet(url, engine='pyarrow')
     return data
+
+# Function to load viewed questions history and comments from a JSON file
+def load_viewed_history_and_comments():
+    if os.path.exists("viewed_questions_and_comments.json"):
+        with open("viewed_questions_and_comments.json", "r") as file:
+            return json.load(file)
+    return {}
+
+# Function to save viewed questions history and comments to a JSON file
+def save_viewed_history_and_comments(viewed_history_and_comments):
+    with open("viewed_questions_and_comments.json", "w") as file:
+        json.dump(viewed_history_and_comments, file)
 
 # Load the dataset
 data = load_data()
@@ -29,57 +43,77 @@ st.markdown("""
 - **Author:** mlabonne
 """)
 
-# Allow the user to select the data source type
-selected_data_source = st.selectbox("Select Data Source Type", data_source_types)
+# User name input
+username = st.text_input("Enter your username")
 
-# Filter the sampled dataset based on the selected data source type
-filtered_data = sampled_data[sampled_data['source'] == selected_data_source]
+if username:
+    # Load viewed questions history and comments
+    viewed_history_and_comments = load_viewed_history_and_comments()
 
-# Function to parse the chosen and rejected responses with error handling
-def format_conversation(conversation):
-    formatted_conversation = ""
-    for entry in conversation:
-        role = entry.get('role', 'unknown')
-        content = entry.get('content', 'No content field found')
-        formatted_conversation += f"**{role.capitalize()}**:\n{content}\n\n"
-    return formatted_conversation.strip()
+    # Initialize user's viewed questions and comments if not already present
+    if username not in viewed_history_and_comments:
+        viewed_history_and_comments[username] = {'viewed': [], 'comments': {}}
 
-# Apply the parsing function to the chosen and rejected columns
-filtered_data['chosen_response'] = filtered_data['chosen'].apply(format_conversation)
-filtered_data['rejected_response'] = filtered_data['rejected'].apply(format_conversation)
+    # Allow the user to select the data source type
+    selected_data_source = st.selectbox("Select Data Source Type", data_source_types)
 
-# Initialize session state for viewed questions
-if 'viewed_questions' not in st.session_state:
-    st.session_state.viewed_questions = []
+    # Filter the sampled dataset based on the selected data source type
+    filtered_data = sampled_data[sampled_data['source'] == selected_data_source]
 
-# Create a list of question indices with their viewed status
-question_options = [
-    f"{i} - {'Viewed' if i in st.session_state.viewed_questions else 'Not Viewed'}"
-    for i in filtered_data.index
-]
+    # Function to parse the chosen and rejected responses with error handling
+    def format_conversation(conversation):
+        formatted_conversation = ""
+        for entry in conversation:
+            role = entry.get('role', 'unknown')
+            content = entry.get('content', 'No content field found')
+            formatted_conversation += f"**{role.capitalize()}**:\n{content}\n\n"
+        return formatted_conversation.strip()
 
-# Create a dropdown for selecting the question index
-index_selection = st.selectbox("Select a Question Index", question_options)
+    # Apply the parsing function to the chosen and rejected columns
+    filtered_data['chosen_response'] = filtered_data['chosen'].apply(format_conversation)
+    filtered_data['rejected_response'] = filtered_data['rejected'].apply(format_conversation)
 
-# Extract the actual index from the selected option
-selected_index = int(index_selection.split(" - ")[0])
+    # Create a list of question indices with their viewed status
+    question_options = [
+        f"{i} - {'Viewed' if i in viewed_history_and_comments[username]['viewed'] else 'Not Viewed'}"
+        for i in filtered_data.index
+    ]
 
-# Get the selected question's details
-selected_data = filtered_data.loc[selected_index]
+    # Create a dropdown for selecting the question index
+    index_selection = st.selectbox("Select a Question Index", question_options)
 
-# Update the session state with the new viewed question index
-if selected_index not in st.session_state.viewed_questions:
-    st.session_state.viewed_questions.append(selected_index)
+    # Extract the actual index from the selected option
+    selected_index = int(index_selection.split(" - ")[0])
 
-# Display the details
-st.markdown("### Data Source Type:")
-st.markdown(f"**{selected_data['source']}**")
+    # Get the selected question's details
+    selected_data = filtered_data.loc[selected_index]
 
-st.markdown("### Question:")
-st.markdown(f"**{selected_data['prompt']}**")
+    # Update the session state with the new viewed question index
+    if selected_index not in viewed_history_and_comments[username]['viewed']:
+        viewed_history_and_comments[username]['viewed'].append(selected_index)
 
-st.markdown("### Chosen Response:")
-st.markdown(selected_data['chosen_response'])
+    # Comment input section
+    st.markdown("### Your Comments")
+    comment = st.text_area("Enter your comments here:", value=viewed_history_and_comments[username]['comments'].get(str(selected_index), ""))
+    if st.button("Save Comment"):
+        viewed_history_and_comments[username]['comments'][str(selected_index)] = comment
+        save_viewed_history_and_comments(viewed_history_and_comments)
+        st.success("Comment saved!")
 
-st.markdown("### Rejected Response:")
-st.markdown(selected_data['rejected_response'])
+    # Save the updated viewed history and comments
+    save_viewed_history_and_comments(viewed_history_and_comments)
+
+    # Display the details
+    st.markdown("### Data Source Type:")
+    st.markdown(f"**{selected_data['source']}**")
+
+    st.markdown("### Question:")
+    st.markdown(f"**{selected_data['prompt']}**")
+
+    st.markdown("### Chosen Response:")
+    st.markdown(selected_data['chosen_response'])
+
+    st.markdown("### Rejected Response:")
+    st.markdown(selected_data['rejected_response'])
+else:
+    st.write("Please enter your username to continue.")
