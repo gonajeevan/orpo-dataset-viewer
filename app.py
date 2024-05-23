@@ -92,17 +92,6 @@ if username:
     if selected_index not in viewed_history_and_comments[username]['viewed']:
         viewed_history_and_comments[username]['viewed'].append(selected_index)
 
-    # Comment input section
-    st.markdown("### Your Comments")
-    comment = st.text_area("Enter your comments here:", value=viewed_history_and_comments[username]['comments'].get(str(selected_index), ""))
-    if st.button("Save Comment"):
-        viewed_history_and_comments[username]['comments'][str(selected_index)] = comment
-        save_viewed_history_and_comments(viewed_history_and_comments)
-        st.success("Comment saved!")
-
-    # Save the updated viewed history and comments
-    save_viewed_history_and_comments(viewed_history_and_comments)
-
     # Display the details
     st.markdown("### Data Source Type:")
     st.markdown(f"**{selected_data['source']}**")
@@ -115,5 +104,29 @@ if username:
 
     st.markdown("### Rejected Response:")
     st.markdown(selected_data['rejected_response'])
+
+    # Add a checkbox for the author to view all comments
+    view_all_comments = st.checkbox("View all comments (for author)")
+
+    # Display comments section
+    st.markdown("### Your Comments")
+    
+    if view_all_comments:
+        # Display all comments for the selected question
+        all_comments = []
+        for user, data in viewed_history_and_comments.items():
+            if str(selected_index) in data['comments']:
+                all_comments.append(f"**{user}**:\n{data['comments'][str(selected_index)]}\n\n")
+        st.markdown("\n".join(all_comments) if all_comments else "No comments yet.")
+    else:
+        # Comment input section
+        comment = st.text_area("Enter your comments here:", value=viewed_history_and_comments[username]['comments'].get(str(selected_index), ""))
+        if st.button("Save Comment"):
+            viewed_history_and_comments[username]['comments'][str(selected_index)] = comment
+            save_viewed_history_and_comments(viewed_history_and_comments)
+            st.success("Comment saved!")
+
+    # Save the updated viewed history and comments
+    save_viewed_history_and_comments(viewed_history_and_comments)
 else:
     st.write("Please enter your username to continue.")
