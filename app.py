@@ -36,6 +36,12 @@ data_source_types = data['source'].unique()
 # Streamlit app
 st.title("Response Visualization")
 
+# Author details
+st.markdown("""
+**App Author:**
+- Jeevan
+""")
+
 # Dataset credits
 st.markdown("""
 **Dataset Credits:**
