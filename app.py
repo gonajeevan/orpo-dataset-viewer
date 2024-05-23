@@ -72,7 +72,7 @@ if username:
         for entry in conversation:
             role = entry.get('role', 'unknown')
             content = entry.get('content', 'No content field found')
-            formatted_conversation += f"**<<<{role.capitalize()}>>>**:\n{content}\n\n"
+            formatted_conversation += f"**<<{role.capitalize()}>>**:\n{content}\n\n"
         return formatted_conversation.strip()
 
     # Apply the parsing function to the chosen and rejected columns
