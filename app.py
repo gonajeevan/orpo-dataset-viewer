@@ -34,7 +34,7 @@ sampled_data = data.sample(n=5000, random_state=1)
 data_source_types = data['source'].unique()
 
 # Streamlit app
-st.title("ORPO Dataset Viewer")
+st.title("ORPO Dataset Viewer (5k Samples)")
 
 # Dataset credits
 st.markdown("""
@@ -106,31 +106,27 @@ st.markdown(selected_data['chosen_response'])
 st.markdown("### Rejected Response:")
 st.markdown(selected_data['rejected_response'])
 
-# Add a checkbox for the author to view all comments
-view_all_comments = st.checkbox("View all comments (for author)")
-
 # Display comments section
 st.markdown("### Comments")
 comment_section = viewed_history_and_comments.get('comments', {})
 
-if view_all_comments:
-    # Display all comments for the selected question
-    all_comments = []
-    for user, comments in comment_section.items():
-        if str(selected_index) in comments:
-            all_comments.append(f"**{user}**:\n{comments[str(selected_index)]}\n\n")
-    st.markdown("\n".join(all_comments) if all_comments else "No comments yet.")
-else:
-    # Comment input section
-    if 'anonymous' not in comment_section:
-        comment_section['anonymous'] = {}
-    
-    comment = st.text_area("Enter your comments here:", value=comment_section['anonymous'].get(str(selected_index), ""))
-    if st.button("Save Comment"):
-        comment_section['anonymous'][str(selected_index)] = comment
-        viewed_history_and_comments['comments'] = comment_section
-        save_viewed_history_and_comments(viewed_history_and_comments)
-        st.success("Comment saved!")
+# Display all comments for the selected question
+all_comments = []
+for user, comments in comment_section.items():
+    if str(selected_index) in comments:
+        all_comments.append(f"**{user}**:\n{comments[str(selected_index)]}\n\n")
+st.markdown("\n".join(all_comments) if all_comments else "No comments yet.")
+
+# Comment input section
+if 'anonymous' not in comment_section:
+    comment_section['anonymous'] = {}
+
+comment = st.text_area("Enter your comments here:", value=comment_section['anonymous'].get(str(selected_index), ""))
+if st.button("Save Comment"):
+    comment_section['anonymous'][str(selected_index)] = comment
+    viewed_history_and_comments['comments'] = comment_section
+    save_viewed_history_and_comments(viewed_history_and_comments)
+    st.success("Comment saved!")
 
 # Save the updated viewed history and comments
 save_viewed_history_and_comments(viewed_history_and_comments)
