@@ -1,6 +1,10 @@
 import streamlit as st
 import pandas as pd
 import json
+import logging
+
+# Configure logging
+logging.basicConfig(level=logging.DEBUG)
 
 # URL of the Parquet dataset
 url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/train-00000-of-00001.parquet"
@@ -17,8 +21,13 @@ data = load_data()
 # Function to parse the chosen and rejected responses with error handling
 def parse_response(response):
     try:
-        return json.loads(response)[0]['content'] if response else ""
+        parsed = json.loads(response)
+        if isinstance(parsed, list) and len(parsed) > 0:
+            return parsed[0].get('content', 'No content field found')
+        else:
+            return "Unexpected JSON format"
     except (json.JSONDecodeError, IndexError, TypeError) as e:
+        logging.error(f"Error parsing response: {e}")
         return "Invalid response format"
 
 # Apply the parsing function to the chosen and rejected columns
