@@ -46,6 +46,9 @@ st.markdown("""
 - Jeevan
 """)
 
+# Display the size of the dataset
+st.markdown(f"### No of Questions: {data.shape[0]} rows")
+
 # Load viewed questions history and comments
 viewed_history_and_comments = load_viewed_history_and_comments()
 
