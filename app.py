@@ -34,7 +34,7 @@ sampled_data = data.sample(n=5000, random_state=1)
 data_source_types = data['source'].unique()
 
 # Streamlit app
-st.title("Response Visualization")
+st.title("ORPO Visualization")
 
 # Author details
 st.markdown("""
@@ -99,7 +99,7 @@ if username:
         viewed_history_and_comments[username]['viewed'].append(selected_index)
 
     # Display the details
-    st.markdown("### Data Source Type:")
+    st.markdown("### Data Sub-Source Type:")
     st.markdown(f"**{selected_data['source']}**")
 
     st.markdown("### Question:")
