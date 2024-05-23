@@ -73,11 +73,11 @@ def format_conversation(conversation):
         role = entry.get('role', 'unknown')
         content = entry.get('content', 'No content field found')
         if role.strip().lower() == 'user':
-            formatted_conversation += f"<span style='color:blue'><strong>{role.capitalize()}:</strong></span>\n{content}\n\n"
+            formatted_conversation += f"<span style='color:white'><strong><<{role.capitalize()}>>:</strong></span>\n{content}\n\n"
         elif role.strip().lower() == 'assistant':
-            formatted_conversation += f"<span style='color:green'><strong>{role.capitalize()}:</strong></span>\n{content}\n\n"
+            formatted_conversation += f"<span style='color:white'><strong><<{role.capitalize()}>>:</strong></span>\n{content}\n\n"
         else:
-            formatted_conversation += f"<strong>{role.capitalize()}:</strong>\n{content}\n\n"
+            formatted_conversation += f"<strong><<{role.capitalize()}>>:</strong>\n{content}\n\n"
     return formatted_conversation.strip()
 
 # Apply the parsing function to the chosen and rejected columns
