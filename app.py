@@ -25,16 +25,13 @@ def save_viewed_history_and_comments(viewed_history_and_comments):
         json.dump(viewed_history_and_comments, file)
 
 # Load the dataset
-data = load_data()
-
-# Sample the data before filtering
-sampled_data = data.sample(n=5000, random_state=1)
+sampled_data = load_data()
 
 # Get unique data source types from the entire dataset
 data_source_types = data['source'].unique()
 
 # Streamlit app
-st.title("ORPO Dataset Viewer (5k Samples)")
+st.title("ORPO Dataset Viewer")
 
 # Dataset credits
 st.markdown("""
