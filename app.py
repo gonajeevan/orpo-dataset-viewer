@@ -61,7 +61,7 @@ if username:
         viewed_history_and_comments[username] = {'viewed': [], 'comments': {}}
 
     # Allow the user to select the data source type
-    selected_data_source = st.selectbox("Select Data Source Type", data_source_types)
+    selected_data_source = st.selectbox("Select Question Source Type", data_source_types)
 
     # Filter the sampled dataset based on the selected data source type
     filtered_data = sampled_data[sampled_data['source'] == selected_data_source]
@@ -99,7 +99,7 @@ if username:
         viewed_history_and_comments[username]['viewed'].append(selected_index)
 
     # Display the details
-    st.markdown("### Data Sub-Source Type:")
+    st.markdown("### Data Source Type:")
     st.markdown(f"**{selected_data['source']}**")
 
     st.markdown("### Question:")
