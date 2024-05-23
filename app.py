@@ -1,12 +1,11 @@
 import streamlit as st
 import pandas as pd
-import json
 
 # URL of the Parquet dataset
 url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/train-00000-of-00001.parquet"
 
 # Function to load the dataset and cache it
-@st.cache_data
+@st.cache
 def load_data():
     data = pd.read_parquet(url, engine='pyarrow').sample(n=5000, random_state=1)
     return data
@@ -20,12 +19,16 @@ def format_conversation(conversation):
     for entry in conversation:
         role = entry.get('role', 'unknown')
         content = entry.get('content', 'No content field found')
-        formatted_conversation += f"((role)){role}:\n{content}\n\n"
+        formatted_conversation += f"**{role.capitalize()}**:\n{content}\n\n"
     return formatted_conversation.strip()
 
 # Apply the parsing function to the chosen and rejected columns
 data['chosen_response'] = data['chosen'].apply(format_conversation)
 data['rejected_response'] = data['rejected'].apply(format_conversation)
+
+# Initialize session state for viewed questions
+if 'viewed_questions' not in st.session_state:
+    st.session_state.viewed_questions = []
 
 # Streamlit app
 st.title("Response Visualization")
@@ -37,24 +40,32 @@ st.markdown("""
 - **Author:** mlabonne
 """)
 
-# Select a prompt to display its details
-prompt_selection = st.selectbox("Select a Prompt", data['prompt'].unique())
+# Filter out already viewed questions
+unviewed_indices = [i for i in data.index if i not in st.session_state.viewed_questions]
 
-# Filter the dataframe based on the selected prompt
-selected_data = data[data['prompt'] == prompt_selection]
+# Check if there are unviewed questions left
+if unviewed_indices:
+    # Create a dropdown for selecting the question index
+    index_selection = st.selectbox("Select a Question Index", unviewed_indices)
 
-# Display the details
-if not selected_data.empty:
+    # Get the selected question's details
+    selected_data = data.loc[index_selection]
+
+    # Update the session state with the new viewed question index
+    if st.button("View Question"):
+        st.session_state.viewed_questions.append(index_selection)
+
+    # Display the details
     st.markdown("### Data Source Type:")
-    st.write(selected_data['source'].values[0])
+    st.markdown(f"**{selected_data['source']}**")
 
     st.markdown("### Question:")
-    st.write(selected_data['prompt'].values[0])
+    st.markdown(f"**{selected_data['prompt']}**")
 
     st.markdown("### Chosen Response:")
-    st.write(selected_data['chosen_response'].values[0])
+    st.markdown(selected_data['chosen_response'])
 
     st.markdown("### Rejected Response:")
-    st.write(selected_data['rejected_response'].values[0])
+    st.markdown(selected_data['rejected_response'])
 else:
-    st.write("No responses available for the selected prompt.")
+    st.write("All questions have been viewed.")
