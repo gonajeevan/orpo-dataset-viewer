@@ -1,12 +1,5 @@
 import streamlit as st
 import pandas as pd
-import pyarrow.parquet as pq
-import requests
-from io import BytesIO
-import json
-
-import streamlit as st
-import pandas as pd
 import json
 
 # URL of the Parquet dataset
@@ -21,9 +14,12 @@ def load_data():
 # Load the dataset
 data = load_data()
 
-# Function to parse the chosen and rejected responses
+# Function to parse the chosen and rejected responses with error handling
 def parse_response(response):
-    return json.loads(response)[0]['content'] if response else ""
+    try:
+        return json.loads(response)[0]['content'] if response else ""
+    except (json.JSONDecodeError, IndexError, TypeError) as e:
+        return "Invalid response format"
 
 # Apply the parsing function to the chosen and rejected columns
 data['chosen_response'] = data['chosen'].apply(parse_response)
@@ -60,4 +56,3 @@ if not selected_data.empty:
     st.write(selected_data['rejected_response'].values[0])
 else:
     st.write("No responses available for the selected prompt.")
-
