@@ -70,9 +70,23 @@ def format_conversation(conversation):
 
 # Function to highlight differences between two texts
 def highlight_differences(chosen, rejected):
-    differ = difflib.HtmlDiff()
-    html_diff = differ.make_table(chosen.splitlines(), rejected.splitlines(), context=True, numlines=0)
-    return html_diff
+    diff = difflib.ndiff(chosen.splitlines(), rejected.splitlines())
+    highlighted_chosen = []
+    highlighted_rejected = []
+
+    for line in diff:
+        if line.startswith('  '):
+            highlighted_chosen.append(line[2:])
+            highlighted_rejected.append(line[2:])
+        elif line.startswith('- '):
+            highlighted_chosen.append(f"<span style='background-color: #ffcccc;'>{line[2:]}</span>")
+        elif line.startswith('+ '):
+            highlighted_rejected.append(f"<span style='background-color: #ccffcc;'>{line[2:]}</span>")
+
+    highlighted_chosen = '\n'.join(highlighted_chosen)
+    highlighted_rejected = '\n'.join(highlighted_rejected)
+
+    return highlighted_chosen, highlighted_rejected
 
 # Apply the parsing function to the chosen and rejected columns
 filtered_data['chosen_response'] = filtered_data['chosen'].apply(format_conversation)
@@ -95,12 +109,12 @@ st.markdown(f"**{selected_data['prompt']}**")
 tab1, tab2 = st.tabs(["Chosen Response", "Rejected Response"])
 
 with tab1:
-    html_diff_chosen = highlight_differences(selected_data['chosen_response'], selected_data['rejected_response'])
-    st.markdown(html_diff_chosen, unsafe_allow_html=True)
+    chosen_diff, rejected_diff = highlight_differences(selected_data['chosen_response'], selected_data['rejected_response'])
+    st.markdown(chosen_diff, unsafe_allow_html=True)
 
 with tab2:
-    html_diff_rejected = highlight_differences(selected_data['rejected_response'], selected_data['chosen_response'])
-    st.markdown(html_diff_rejected, unsafe_allow_html=True)
+    chosen_diff, rejected_diff = highlight_differences(selected_data['chosen_response'], selected_data['rejected_response'])
+    st.markdown(rejected_diff, unsafe_allow_html=True)
 
 # Display comments section
 st.markdown("### Comments")
