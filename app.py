@@ -5,6 +5,10 @@ import requests
 from io import BytesIO
 import json
 
+import streamlit as st
+import pandas as pd
+import json
+
 # URL of the Parquet dataset
 url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/train-00000-of-00001.parquet"
 
@@ -35,18 +39,25 @@ st.markdown("""
 - **Author:** mlabonne
 """)
 
-# Select a prompt to display its chosen and rejected responses
+# Select a prompt to display its details
 prompt_selection = st.selectbox("Select a Prompt", data['prompt'].unique())
 
 # Filter the dataframe based on the selected prompt
 selected_data = data[data['prompt'] == prompt_selection]
 
-# Display the chosen and rejected responses
+# Display the details
 if not selected_data.empty:
-    st.write("Chosen Response:")
+    st.markdown("### Data Source Type:")
+    st.write(selected_data['source'].values[0])
+
+    st.markdown("### Question:")
+    st.write(selected_data['prompt'].values[0])
+
+    st.markdown("### Chosen Response:")
     st.write(selected_data['chosen_response'].values[0])
 
-    st.write("Rejected Response:")
+    st.markdown("### Rejected Response:")
     st.write(selected_data['rejected_response'].values[0])
 else:
     st.write("No responses available for the selected prompt.")
+
