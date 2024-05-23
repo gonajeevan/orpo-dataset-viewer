@@ -108,7 +108,7 @@ if selected_index not in viewed_history_and_comments['viewed']:
 
 # Display the details
 st.markdown(f"\n\n")
-st.markdown(f"### Data Sub-Source Type: **{selected_data['source']}**\n")
+# st.markdown(f"### Data Sub-Source Type: **{selected_data['source']}**\n")
 
 
 st.markdown("### Question:")
