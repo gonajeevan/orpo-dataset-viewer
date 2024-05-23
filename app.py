@@ -3,53 +3,50 @@ import pandas as pd
 import pyarrow.parquet as pq
 import requests
 from io import BytesIO
+import json
 
-# Function to load the dataset
-@st.cache
+# URL of the Parquet dataset
+url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/orpo_40k_dataset.parquet"
+
+# Function to load the dataset and cache it
+@st.cache_data
 def load_data():
-    url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/train-00000-of-00001.parquet"
-    response = requests.get(url)
-    data = pd.read_parquet(BytesIO(response.content))
+    data = pd.read_parquet(url, engine='pyarrow').sample(n=5000, random_state=1)
     return data
 
-# Function to get a random sample of data
-@st.cache
-def get_sample(data, n=5000):
-    return data.sample(n)
-
-# Load the full dataset
+# Load the dataset
 data = load_data()
 
-# Get a random sample of 5k rows
-sampled_data = get_sample(data)
+# Function to parse the chosen and rejected responses
+def parse_response(response):
+    return json.loads(response)[0]['content'] if response else ""
+
+# Apply the parsing function to the chosen and rejected columns
+data['chosen_response'] = data['chosen'].apply(parse_response)
+data['rejected_response'] = data['rejected'].apply(parse_response)
 
 # Streamlit app
-st.title('ORPO-DPO-MIX-40K Dataset Viewer')
+st.title("Response Visualization")
 
-# Add credits to dataset owner
+# Dataset credits
 st.markdown("""
 **Dataset Credits:**
-- Dataset provided by [mlabonne](https://huggingface.co/mlabonne)
-- Dataset URL: [ORPO-DPO-MIX-40K](https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k)
+- **Source:** [ORPO-DPO-MIX-40K Dataset on Hugging Face](https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/tree/main/data)
+- **Author:** mlabonne
 """)
 
-# Select a question to view
-question_index = st.slider('Select question index', 0, len(sampled_data) - 1, 0)
-selected_row = sampled_data.iloc[question_index]
+# Select a prompt to display its chosen and rejected responses
+prompt_selection = st.selectbox("Select a Prompt", data['prompt'].unique())
 
-st.write(f"**Source**: {selected_row['source']}")
-st.write(f"**Prompt**: {selected_row['prompt']}")
+# Filter the dataframe based on the selected prompt
+selected_data = data[data['prompt'] == prompt_selection]
 
-st.subheader("Chosen Response")
-st.write(selected_row['chosen'])
+# Display the chosen and rejected responses
+if not selected_data.empty:
+    st.write("Chosen Response:")
+    st.write(selected_data['chosen_response'].values[0])
 
-st.subheader("Rejected Response")
-st.write(selected_row['rejected'])
-
-# Visualization
-st.sidebar.title("Dataset Visualization")
-if st.sidebar.checkbox("Show Dataset Summary"):
-    st.sidebar.write(sampled_data.describe(include='all'))
-
-if st.sidebar.checkbox("Show Source Distribution"):
-    st.sidebar.bar_chart(sampled_data['source'].value_counts())
+    st.write("Rejected Response:")
+    st.write(selected_data['rejected_response'].values[0])
+else:
+    st.write("No responses available for the selected prompt.")
