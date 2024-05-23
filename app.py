@@ -15,19 +15,17 @@ def load_data():
 data = load_data()
 
 # Function to parse the chosen and rejected responses with error handling
-def parse_response(response):
-    try:
-        parsed = json.loads(response.replace("'", "\""))
-        if isinstance(parsed, list) and len(parsed) > 0:
-            return "\n\n".join([entry.get('content', 'No content field found') for entry in parsed])
-        else:
-            return "Unexpected JSON format"
-    except (json.JSONDecodeError, IndexError, TypeError) as e:
-        return f"Invalid response format: {e}"
+def format_conversation(conversation):
+    formatted_conversation = ""
+    for entry in conversation:
+        role = entry.get('role', 'unknown')
+        content = entry.get('content', 'No content field found')
+        formatted_conversation += f"((role)){role}:\n{content}\n\n"
+    return formatted_conversation.strip()
 
 # Apply the parsing function to the chosen and rejected columns
-data['chosen_response'] = data['chosen'].apply(parse_response)
-data['rejected_response'] = data['rejected'].apply(parse_response)
+data['chosen_response'] = data['chosen'].apply(format_conversation)
+data['rejected_response'] = data['rejected'].apply(format_conversation)
 
 # Streamlit app
 st.title("Response Visualization")
