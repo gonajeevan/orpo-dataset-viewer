@@ -79,9 +79,9 @@ def highlight_differences(chosen, rejected):
             highlighted_chosen.append(line[2:])
             highlighted_rejected.append(line[2:])
         elif line.startswith('- '):
-            highlighted_chosen.append(f"<span style='background-color: #e6ffe6; color: black;'>{line[2:]}</span>")
+            highlighted_chosen.append(f"<span style='background-color: #ffcccc; color: black;'>{line[2:]}</span>")
         elif line.startswith('+ '):
-            highlighted_rejected.append(f"<span style='background-color: #ffe6e6; color: black;'>{line[2:]}</span>")
+            highlighted_rejected.append(f"<span style='background-color: #ccffcc; color: black;'>{line[2:]}</span>")
 
     highlighted_chosen = '\n'.join(highlighted_chosen)
     highlighted_rejected = '\n'.join(highlighted_rejected)
