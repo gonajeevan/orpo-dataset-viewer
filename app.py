@@ -104,10 +104,10 @@ st.markdown(f"**{selected_data['prompt']}**")
 tab1, tab2 = st.tabs(["Chosen Response", "Rejected Response"])
 
 with tab1:
-    st.markdown(selected_data['chosen_response'])
+    st.markdown(f"<div style='color: green;'>{selected_data['chosen_response']}</div>", unsafe_allow_html=True)
 
 with tab2:
-    st.markdown(selected_data['rejected_response'])
+    st.markdown(f"<div style='color: orange;'>{selected_data['rejected_response']}</div>", unsafe_allow_html=True)
 
 # Display comments section
 st.markdown("### Comments")
