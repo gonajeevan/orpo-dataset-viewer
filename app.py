@@ -25,7 +25,7 @@ def save_viewed_history_and_comments(viewed_history_and_comments):
         json.dump(viewed_history_and_comments, file)
 
 # Load the dataset
-sampled_data = load_data()
+data = load_data()
 
 # Get unique data source types from the entire dataset
 data_source_types = data['source'].unique()
@@ -53,7 +53,7 @@ viewed_history_and_comments = load_viewed_history_and_comments()
 selected_data_source = st.selectbox("Select Data Sub-Source Type", data_source_types)
 
 # Filter the sampled dataset based on the selected data source type
-filtered_data = sampled_data[sampled_data['source'] == selected_data_source]
+filtered_data = data[data['source'] == selected_data_source]
 
 # Function to parse the chosen and rejected responses with error handling
 def format_conversation(conversation):
