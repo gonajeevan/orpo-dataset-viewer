@@ -7,7 +7,7 @@ import os
 url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/train-00000-of-00001.parquet"
 
 # Function to load the dataset and cache it
-@st.cache
+@st.cache_data
 def load_data():
     data = pd.read_parquet(url, engine='pyarrow')
     return data
@@ -46,16 +46,16 @@ st.markdown("""
 - Jeevan
 """)
 
-# Display the size of the dataset
-st.markdown(f"### No of Questions: {data.shape[0]} \n")
+# Display the number of questions
+st.markdown(f"### No of Questions: {data.shape[0]}")
 
 # Load viewed questions history and comments
 viewed_history_and_comments = load_viewed_history_and_comments()
 
 # Allow the user to select the data source type
-selected_data_source = st.selectbox("Select Data Sub-Source Type", data_source_types)
+selected_data_source = st.selectbox("Select Data Source Type", data_source_types)
 
-# Filter the sampled dataset based on the selected data source type
+# Filter the dataset based on the selected data source type
 filtered_data = data[data['source'] == selected_data_source]
 
 # Function to parse the chosen and rejected responses with error handling
@@ -64,21 +64,8 @@ def format_conversation(conversation):
     for entry in conversation:
         role = entry.get('role', 'unknown')
         content = entry.get('content', 'No content field found')
-        formatted_conversation += f"**<<{role.capitalize()}>>**:\n{content}\n\n"
+        formatted_conversation += f"{role.capitalize()}:\n{content}\n\n"
     return formatted_conversation.strip()
-
-# def format_conversation(conversation):
-#     formatted_conversation = ""
-#     for entry in conversation:
-#         role = entry.get('role', 'unknown')
-#         content = entry.get('content', 'No content field found')
-#         if role.strip().lower() == 'user':
-#             formatted_conversation += f"<span style='color:yellow'><strong><<{role.capitalize()}>>:</strong></span>\n{content}\n\n"
-#         elif role.strip().lower() == 'assistant':
-#             formatted_conversation += f"<span style='color:green'><strong><<{role.capitalize()}>>:</strong></span>\n{content}\n\n"
-#         else:
-#             formatted_conversation += f"<strong><<{role.capitalize()}>>:</strong>\n{content}\n\n"
-#     return formatted_conversation.strip()
 
 # Apply the parsing function to the chosen and rejected columns
 filtered_data['chosen_response'] = filtered_data['chosen'].apply(format_conversation)
@@ -107,20 +94,20 @@ if selected_index not in viewed_history_and_comments['viewed']:
     viewed_history_and_comments['viewed'].append(selected_index)
 
 # Display the details
-st.markdown(f"\n\n")
-# st.markdown(f"### Data Sub-Source Type: **{selected_data['source']}**\n")
-
+st.markdown("### Data Source Type:")
+st.markdown(f"**{selected_data['source']}**")
 
 st.markdown("### Question:")
 st.markdown(f"**{selected_data['prompt']}**")
 
-st.markdown("### Chosen Response:")
-# st.markdown(selected_data['chosen_response'], unsafe_allow_html=True)
-st.markdown(selected_data['chosen_response'])
+# Create tabs for Chosen Response and Rejected Response
+tab1, tab2 = st.tabs(["Chosen Response", "Rejected Response"])
 
-st.markdown("### Rejected Response:")
-# st.markdown(selected_data['rejected_response'], unsafe_allow_html=True)
-st.markdown(selected_data['rejected_response'])
+with tab1:
+    st.markdown(selected_data['chosen_response'])
+
+with tab2:
+    st.markdown(selected_data['rejected_response'])
 
 # Display comments section
 st.markdown("### Comments")
@@ -130,8 +117,8 @@ comment_section = viewed_history_and_comments.get('comments', {})
 all_comments = []
 for user, comments in comment_section.items():
     if str(selected_index) in comments:
-        all_comments.append(f"**{user}**:\n{comments[str(selected_index)]}\n\n")
-st.markdown("\n".join(all_comments) if all_comments else "No comments yet.")
+        all_comments.append(f"**{user}**:<br>{comments[str(selected_index)]}<br><br>")
+st.markdown("\n".join(all_comments) if all_comments else "No comments yet.", unsafe_allow_html=True)
 
 # Comment input section
 if 'anonymous' not in comment_section:
