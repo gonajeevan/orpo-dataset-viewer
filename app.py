@@ -13,7 +13,10 @@ def load_data():
 # Load the dataset
 data = load_data()
 
-# Get unique data source types
+# Sample the data before filtering
+sampled_data = data.sample(n=5000, random_state=1)
+
+# Get unique data source types from the entire dataset
 data_source_types = data['source'].unique()
 
 # Streamlit app
@@ -29,8 +32,8 @@ st.markdown("""
 # Allow the user to select the data source type
 selected_data_source = st.selectbox("Select Data Source Type", data_source_types)
 
-# Filter the dataset based on the selected data source type
-filtered_data = data[data['source'] == selected_data_source].sample(n=5000, random_state=1)
+# Filter the sampled dataset based on the selected data source type
+filtered_data = sampled_data[sampled_data['source'] == selected_data_source]
 
 # Function to parse the chosen and rejected responses with error handling
 def format_conversation(conversation):
