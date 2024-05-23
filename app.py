@@ -53,7 +53,7 @@ st.markdown("""
 viewed_history_and_comments = load_viewed_history_and_comments()
 
 # Allow the user to select the data source type
-selected_data_source = st.selectbox("Select Data Source Type", data_source_types)
+selected_data_source = st.selectbox("Select Data Sub-Source Type", data_source_types)
 
 # Filter the sampled dataset based on the selected data source type
 filtered_data = sampled_data[sampled_data['source'] == selected_data_source]
