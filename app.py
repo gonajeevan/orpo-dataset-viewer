@@ -40,32 +40,34 @@ st.markdown("""
 - **Author:** mlabonne
 """)
 
-# Filter out already viewed questions
-unviewed_indices = [i for i in data.index if i not in st.session_state.viewed_questions]
+# Create a list of question indices with their viewed status
+question_options = [
+    f"{i} - {'Viewed' if i in st.session_state.viewed_questions else 'Not Viewed'}"
+    for i in data.index
+]
 
-# Check if there are unviewed questions left
-if unviewed_indices:
-    # Create a dropdown for selecting the question index
-    index_selection = st.selectbox("Select a Question Index", unviewed_indices)
+# Create a dropdown for selecting the question index
+index_selection = st.selectbox("Select a Question Index", question_options)
 
-    # Get the selected question's details
-    selected_data = data.loc[index_selection]
+# Extract the actual index from the selected option
+selected_index = int(index_selection.split(" - ")[0])
 
-    # Update the session state with the new viewed question index
-    if st.button("View Question"):
-        st.session_state.viewed_questions.append(index_selection)
+# Get the selected question's details
+selected_data = data.loc[selected_index]
 
-    # Display the details
-    st.markdown("### Data Source Type:")
-    st.markdown(f"**{selected_data['source']}**")
+# Update the session state with the new viewed question index
+if selected_index not in st.session_state.viewed_questions:
+    st.session_state.viewed_questions.append(selected_index)
 
-    st.markdown("### Question:")
-    st.markdown(f"**{selected_data['prompt']}**")
+# Display the details
+st.markdown("### Data Source Type:")
+st.markdown(f"**{selected_data['source']}**")
 
-    st.markdown("### Chosen Response:")
-    st.markdown(selected_data['chosen_response'])
+st.markdown("### Question:")
+st.markdown(f"**{selected_data['prompt']}**")
 
-    st.markdown("### Rejected Response:")
-    st.markdown(selected_data['rejected_response'])
-else:
-    st.write("All questions have been viewed.")
+st.markdown("### Chosen Response:")
+st.markdown(selected_data['chosen_response'])
+
+st.markdown("### Rejected Response:")
+st.markdown(selected_data['rejected_response'])
