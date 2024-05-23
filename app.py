@@ -70,18 +70,18 @@ def format_conversation(conversation):
 
 # Function to highlight differences between two texts
 def highlight_differences(chosen, rejected):
-    diff = difflib.ndiff(chosen.splitlines(), rejected.splitlines())
+    differ = difflib.ndiff(chosen.splitlines(), rejected.splitlines())
     highlighted_chosen = []
     highlighted_rejected = []
 
-    for line in diff:
+    for line in differ:
         if line.startswith('  '):
             highlighted_chosen.append(line[2:])
             highlighted_rejected.append(line[2:])
         elif line.startswith('- '):
-            highlighted_chosen.append(f"<span style='background-color: #ffcccc;'>{line[2:]}</span>")
+            highlighted_chosen.append(f"<span style='background-color: #ff6666; color: black;'>{line[2:]}</span>")
         elif line.startswith('+ '):
-            highlighted_rejected.append(f"<span style='background-color: #ccffcc;'>{line[2:]}</span>")
+            highlighted_rejected.append(f"<span style='background-color: #66ff66; color: black;'>{line[2:]}</span>")
 
     highlighted_chosen = '\n'.join(highlighted_chosen)
     highlighted_rejected = '\n'.join(highlighted_rejected)
