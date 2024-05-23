@@ -135,4 +135,4 @@ if username:
     # Save the updated viewed history and comments
     save_viewed_history_and_comments(viewed_history_and_comments)
 else:
-    st.write("Please enter your username to continue.")
+    st.write("Please enter your username to continue.(To track history and for no other use)")
