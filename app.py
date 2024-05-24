@@ -23,7 +23,7 @@ data_source_types = data['source'].unique()
 st.title("ORPO Dataset Viewer")
 
 # Dataset credits
-st.markdown("""
+st.markdown(f"""####
 **Dataset Credits:**
 - **Source:** [ORPO-DPO-MIX-40K Dataset on Hugging Face](https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/tree/main/data)
 - **Author:** Maxime Labonne (mlabonne)
