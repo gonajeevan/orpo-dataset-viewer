@@ -106,14 +106,11 @@ if selected_data_source.lower() in ('toxic-dpo-v0.2'):
     <div style='border: 1px solid white; padding: 10px;'>
         <strong>Toxicity:</strong><br>
         Note that ORPO-DPO-mix-40k contains a dataset (toxic-dpo-v0.2) designed to prompt the model to answer illegal questions. You can remove it as follows:
-        <pre>
-        dataset = load_dataset('mlabonne/orpo-mix-40k', split='train') <br>
-        dataset = dataset.filter(<br>
-            lambda r: r["source"] != "toxic-dpo-v0.2"<br>
-        )<br>
-        </pre>
-    </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
+    st.code("""
+    dataset = load_dataset('mlabonne/orpo-mix-40k', split='train')
+    dataset = dataset.filter(lambda r: r["source"] != "toxic-dpo-v0.2")
+    """, language='python')
 
 
 st.markdown("### Question:")
