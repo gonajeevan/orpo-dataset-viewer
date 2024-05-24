@@ -10,7 +10,7 @@ url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/da
 @st.cache_data
 def load_data():
     # Load the dataset in streaming mode
-    dataset = load_dataset("https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k", split="train", streaming=True)
+    dataset = load_dataset("mlabonne/orpo-dpo-mix-40k", split="train", streaming=True)
     # Convert the streaming dataset to a pandas DataFrame
     data = pd.DataFrame(dataset)
     data_source_types = data['source'].unique()
