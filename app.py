@@ -1,20 +1,19 @@
 import streamlit as st
 import pandas as pd
-import json
-import os
 import difflib
 
 # URL of the Parquet dataset
 url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/train-00000-of-00001.parquet"
 
-# Function to load the dataset and cache it
+# Function to load and cache the dataset
 @st.cache_data
-def load_data():
-    data = pd.read_parquet(url, engine='pyarrow')
+def load_data(url):
+    columns_to_use = ['source', 'prompt', 'chosen', 'rejected']
+    data = pd.read_parquet(url, columns=columns_to_use, engine='pyarrow')
     return data
 
 # Load the dataset
-data = load_data()
+data = load_data(url)
 
 # Get unique data source types from the entire dataset
 data_source_types = data['source'].unique()
@@ -23,7 +22,6 @@ data_source_types = data['source'].unique()
 st.title("ORPO Dataset Viewer")
 
 # Dataset credits
-st.markdown(f"")
 st.markdown("""
 **Dataset Credits:**
 - **Source:** [ORPO-DPO-MIX-40K Dataset on Hugging Face](https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/tree/main/data)
@@ -31,13 +29,10 @@ st.markdown("""
 """)
 
 # Author details
-st.markdown(f"")
-st.markdown(f"#### App Author: Jeevan")
-st.markdown(f"")
-st.markdown(f"")
+st.markdown("#### App Author: Jeevan")
 
 # Display the number of questions
-st.markdown(f"### No of Questions: {data.shape[0]}")
+st.markdown(f"### Number of Questions: {data.shape[0]}")
 
 # Allow the user to select the data source type
 selected_data_source = st.selectbox("Select Data Source Type", data_source_types)
@@ -74,10 +69,6 @@ def highlight_differences(chosen, rejected):
 
     return highlighted_chosen, highlighted_rejected
 
-# Apply the parsing function to the chosen and rejected columns
-filtered_data['chosen_response'] = filtered_data['chosen'].apply(format_conversation)
-filtered_data['rejected_response'] = filtered_data['rejected'].apply(format_conversation)
-
 # Create a dropdown for selecting the question index
 index_selection = st.selectbox("Select a Question Index", filtered_data.index)
 
@@ -85,9 +76,7 @@ index_selection = st.selectbox("Select a Question Index", filtered_data.index)
 selected_data = filtered_data.loc[index_selection]
 
 # Display the details
-# st.markdown("### Data Source Type:")
-# st.markdown(f"**{selected_data['source']}**")
-if selected_data_source.lower() in ('toxic-dpo-v0.2'):
+if selected_data_source.lower() == 'toxic-dpo-v0.2':
     st.markdown("""
     <div style='border: 1px solid white; padding: 10px;'>
         <em>(From Data Owner)</em>
@@ -100,21 +89,20 @@ if selected_data_source.lower() in ('toxic-dpo-v0.2'):
     </div>
     """, unsafe_allow_html=True)
 
-
-st.markdown(f"")
-st.markdown(f"")
 st.markdown("### Question:")
 st.markdown(f"**{selected_data['prompt']}**")
 
 # Create tabs for Chosen Response and Rejected Response
 tab1, tab2 = st.tabs(["Chosen Response", "Rejected Response"])
 
+chosen_response = format_conversation(selected_data['chosen'])
+rejected_response = format_conversation(selected_data['rejected'])
+chosen_diff, rejected_diff = highlight_differences(chosen_response, rejected_response)
+
 with tab1:
-    chosen_diff, rejected_diff = highlight_differences(selected_data['chosen_response'], selected_data['rejected_response'])
     st.markdown(chosen_diff, unsafe_allow_html=True)
 
 with tab2:
-    chosen_diff, rejected_diff = highlight_differences(selected_data['chosen_response'], selected_data['rejected_response'])
     st.markdown(rejected_diff, unsafe_allow_html=True)
 
 st.markdown("""
