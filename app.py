@@ -13,18 +13,6 @@ def load_data():
     data = pd.read_parquet(url, engine='pyarrow')
     return data
 
-# Function to load viewed questions history and comments from a JSON file
-def load_viewed_history_and_comments():
-    if os.path.exists("viewed_questions_and_comments.json"):
-        with open("viewed_questions_and_comments.json", "r") as file:
-            return json.load(file)
-    return {}
-
-# Function to save viewed questions history and comments to a JSON file
-def save_viewed_history_and_comments(viewed_history_and_comments):
-    with open("viewed_questions_and_comments.json", "w") as file:
-        json.dump(viewed_history_and_comments, file)
-
 # Load the dataset
 data = load_data()
 
@@ -46,9 +34,6 @@ st.markdown("""App Author: Jeevan""")
 
 # Display the number of questions
 st.markdown(f"### No of Questions: {data.shape[0]}")
-
-# Load viewed questions history and comments
-viewed_history_and_comments = load_viewed_history_and_comments()
 
 # Allow the user to select the data source type
 selected_data_source = st.selectbox("Select Data Source Type", data_source_types)
@@ -127,28 +112,3 @@ with tab1:
 with tab2:
     chosen_diff, rejected_diff = highlight_differences(selected_data['chosen_response'], selected_data['rejected_response'])
     st.markdown(rejected_diff, unsafe_allow_html=True)
-
-# Display comments section
-st.markdown("### Comments")
-comment_section = viewed_history_and_comments.get('comments', {})
-
-# Display all comments for the selected question
-all_comments = []
-for user, comments in comment_section.items():
-    if str(index_selection) in comments:
-        all_comments.append(f"**{user}**:<br>{comments[str(index_selection)]}<br><br>")
-st.markdown("\n".join(all_comments) if all_comments else "No comments yet.", unsafe_allow_html=True)
-
-# Comment input section
-if 'anonymous' not in comment_section:
-    comment_section['anonymous'] = {}
-
-comment = st.text_area("Enter your comments here:", value=comment_section['anonymous'].get(str(index_selection), ""))
-if st.button("Save Comment"):
-    comment_section['anonymous'][str(index_selection)] = comment
-    viewed_history_and_comments['comments'] = comment_section
-    save_viewed_history_and_comments(viewed_history_and_comments)
-    st.success("Comment saved!")
-
-# Save the updated viewed history and comments
-save_viewed_history_and_comments(viewed_history_and_comments)
