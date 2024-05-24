@@ -42,7 +42,7 @@ st.markdown("""
 """)
 
 # Author details
-st.markdown("""**App Author: Jeevan** """)
+st.markdown("""App Author: Jeevan""")
 
 # Display the number of questions
 st.markdown(f"### No of Questions: {data.shape[0]}")
