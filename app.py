@@ -30,7 +30,7 @@ st.markdown("""
 """)
 
 # Author details
-st.markdown("""App Author: Jeevan""")
+st.markdown(f"#### App Author: Jeevan")
 
 # Display the number of questions
 st.markdown(f"### No of Questions: {data.shape[0]}")
@@ -112,3 +112,9 @@ with tab1:
 with tab2:
     chosen_diff, rejected_diff = highlight_differences(selected_data['chosen_response'], selected_data['rejected_response'])
     st.markdown(rejected_diff, unsafe_allow_html=True)
+
+st.markdown("""
+<div style="border-top: 2px solid black; margin-top: 20px; padding-top: 10px; text-align: center; font-size: 20px;">
+    __x__
+</div>
+""", unsafe_allow_html=True)
