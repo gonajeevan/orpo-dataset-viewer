@@ -30,7 +30,7 @@ st.markdown("""
 """)
 
 # Author details
-st.markdown(f"#### App Author: Jeevan")
+st.markdown(f"##### App Author: Jeevan")
 st.markdown(f"")
 st.markdown(f"")
 
