@@ -31,6 +31,7 @@ st.markdown("""
 
 # Author details
 st.markdown(f"#### App Author: Jeevan")
+st.markdown(f"")
 
 # Display the number of questions
 st.markdown(f"### No of Questions: {data.shape[0]}")
@@ -115,6 +116,5 @@ with tab2:
 
 st.markdown("""
 <div style="border-top: 2px solid white; margin-top: 20px; padding-top: 10px; text-align: center; font-size: 20px;">
-Thank You
 </div>
 """, unsafe_allow_html=True)
