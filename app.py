@@ -90,7 +90,6 @@ if selected_data_source.lower() in ('toxic-dpo-v0.2'):
     <div style='border: 1px solid white; padding: 10px;'>
         <em>(From Data Owner)</em>
         <br><br>
-        <strong>Toxicity</strong><br>
         Note that ORPO-DPO-mix-40k contains a dataset (toxic-dpo-v0.2) designed to prompt the model to answer illegal questions. You can remove it as follows:
         <br><br>
         <code>dataset = load_dataset('mlabonne/orpo-mix-40k', split='train')<br></code>
