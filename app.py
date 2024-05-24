@@ -104,10 +104,11 @@ selected_data = filtered_data.loc[index_selection]
 if selected_data_source.lower() in ('toxic-dpo-v0.2'):
     st.markdown("""
     <div style='border: 1px solid white; padding: 10px;'>
-        <em>(Note from Data Author)</em>
+        <em>(Note from Data Author)</em><br>
         <strong>Toxicity</strong><br>
-        Note that ORPO-DPO-mix-40k contains a dataset (toxic-dpo-v0.2) designed to prompt the model to answer illegal questions. You can remove it as follows:
-        <br><br>
+        Note that ORPO-DPO-mix-40k contains a dataset (toxic-dpo-v0.2) designed to prompt the model to answer illegal questions. 
+        <br>
+        You can remove it as follows:
         <code>dataset = load_dataset('mlabonne/orpo-mix-40k', split='train')<br>
         dataset = dataset.filter(lambda r: r["source"] != "toxic-dpo-v0.2")</code>
         <br><br>
