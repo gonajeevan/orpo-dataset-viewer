@@ -107,8 +107,9 @@ if selected_data_source.lower() in ('toxic-dpo-v0.2'):
         <em>(Note from Data Author)</em><br>
         <strong>Toxicity</strong><br>
         Note that ORPO-DPO-mix-40k contains a dataset (toxic-dpo-v0.2) designed to prompt the model to answer illegal questions. 
-        <br>
+        <br><br>
         You can remove it as follows:
+        <br>
         <code>dataset = load_dataset('mlabonne/orpo-mix-40k', split='train')<br>
         dataset = dataset.filter(lambda r: r["source"] != "toxic-dpo-v0.2")</code>
         <br><br>
