@@ -26,7 +26,7 @@ st.title("ORPO Dataset Viewer")
 st.markdown("""
 **Dataset Credits:**
 - **Source:** [ORPO-DPO-MIX-40K Dataset on Hugging Face](https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/tree/main/data)
-- **Author:** mlabonne
+- **Author:** Maxime Labonne (mlabonne)
 """)
 
 # Author details
