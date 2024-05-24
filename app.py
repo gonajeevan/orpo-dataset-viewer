@@ -114,7 +114,7 @@ with tab2:
     st.markdown(rejected_diff, unsafe_allow_html=True)
 
 st.markdown("""
-<div style="border-top: 2px solid black; margin-top: 20px; padding-top: 10px; text-align: center; font-size: 20px;">
-    __x__
+<div style="border-top: 2px solid white; margin-top: 20px; padding-top: 10px; text-align: center; font-size: 20px;">
+Thank You
 </div>
 """, unsafe_allow_html=True)
