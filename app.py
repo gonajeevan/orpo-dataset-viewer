@@ -1,22 +1,23 @@
 import streamlit as st
 import pandas as pd
 import difflib
+from datasets import load_dataset
 
 # URL of the Parquet dataset
 url = "https://huggingface.co/datasets/mlabonne/orpo-dpo-mix-40k/resolve/main/data/train-00000-of-00001.parquet"
 
 # Function to load and cache the dataset
 @st.cache_data
-def load_data(url):
-    columns_to_use = ['source', 'prompt', 'chosen', 'rejected']
-    data = pd.read_parquet(url, columns=columns_to_use, engine='pyarrow')
-    return data
+def load_data():
+    # Load the dataset in streaming mode
+    dataset = load_dataset("mlabonne/orpo-dpo-mix-40k", split="train", streaming=True)
+    # Convert the streaming dataset to a pandas DataFrame
+    data = pd.DataFrame(dataset)
+    data_source_types = data['source'].unique()
+    return data, data_source_types
 
-# Load the dataset
-data = load_data(url)
-
-# Get unique data source types from the entire dataset
-data_source_types = data['source'].unique()
+# Load the dataset and get unique data source types
+data, data_source_types = load_data()
 
 # Streamlit app
 st.title("ORPO Dataset Viewer")
